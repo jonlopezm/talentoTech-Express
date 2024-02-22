@@ -40,7 +40,7 @@ router.post('/houses', async (req, res) => {
             res.send({ "status": "error", "message": "El codigo ya fue registrado" })
         } else   {
             console.log('Ocurrió un error:', err);
-            res.send({ "status": "error", "message": "Error almacenando la informacion" })
+            res.send({ "status": "error", "message": err.message })
         }
     })
 })

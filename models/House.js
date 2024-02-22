@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const fetch = require('node-fetch');
 
 const houseSchema = new mongoose.Schema({
     address: {
@@ -9,51 +9,27 @@ const houseSchema = new mongoose.Schema({
     },
     city: {
         type: String,
-        required: true
+        required: true,
+        validate: {
+            validator: async function (city) {
+                var response = await fetch('https://api-colombia.com/api/v1/City');
+                var cities = await response.json();
+                return cities.some(object => object.name.toUpperCase().includes(city.toUpperCase()));
+            },
+            message: props => `${props.value} no es una ciudad valida de colombia!`
+        }
     },
     state: {
         type: String,
         required: true,
         validate: {
-            validator: function (state) {
-                const departamentosColombia = [
-                    "AMAZONAS",
-                    "ANTIOQUIA",
-                    "ARAUCA",
-                    "ATLÁNTICO",
-                    "BOLÍVAR",
-                    "BOYACÁ",
-                    "CALDAS",
-                    "CAQUETÁ",
-                    "CASANARE",
-                    "CAUCA",
-                    "CESAR",
-                    "CHOCÓ",
-                    "CÓRDOBA",
-                    "CUNDINAMARCA",
-                    "GUAINÍA",
-                    "GUAIVARE",
-                    "HUILA",
-                    "LA GUAJIRA",
-                    "MAGDALENA",
-                    "META",
-                    "NARIÑO",
-                    "NORTE DE SANTANDER",
-                    "PUTUMAYO",
-                    "QUINDÍO",
-                    "RISARALDA",
-                    "SAN ANDRÉS Y PROVIDENCIA",
-                    "SANTANDER",
-                    "SUCRE",
-                    "TOLIMA",   
-                    "VALLE DEL CAUCA",
-                    "VAUPÉS",
-                    "VICHADA"
-                ];
-                return departamentosColombia.includes(state.toUpperCase());
+            validator: async function (state) {
+                var response = await fetch('https://api-colombia.com/api/v1/Department');
+                var states = await response.json();
+                return states.some(object => object.name.toUpperCase().includes(state.toUpperCase()));
             },
-            message: props => `${props.value} no es un departamento valido!`
-          }  
+            message: props => `${props.value} no es un departamento valido de colombia!`
+        }
     },
     size: {
         type: Number,
