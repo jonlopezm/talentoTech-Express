@@ -17,6 +17,7 @@ mongoose.connect(DB_URL);
 
 const userRoutes = require('./routes/UserRoutes');
 const houseRoutes = require('./routes/HouseRoutes');
+const messageRoutes = require('./routes/MessageRoutes');
 
 //Metodo [GET, POST, PUT, PATCH, DELETE]
 // Nombre del servicio [/]
@@ -25,16 +26,23 @@ router.get('/', (req, res) => {
     res.send("Hello world")
 })
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
+/** Metodos websocket */
+io.on('connect', (socket) => {
+    console.log("connected")
+    //Escuchando eventos desde el servidor
+    socket.on('message', (data) => {
+        /** Almacenando el mensaje en la BD */
+        var payload = JSON.parse(data)
+        console.log(payload)
+        MessageSchema(payload).save().then((result) => {
+            socket.emit('message-receipt', {"message": "Mensaje almacenado"})
+        }).catch((err) => {
+            console.log({"status" : "error", "message" :err.message})
+        })        
+    })
 
-    socket.on('message', (msg) => {
-        console.log('message: ' + msg);
-        socket.emit('chat message', 'Mensaje recibido: ' + msg);// Emitir un mensaje a todos los clientes
-    }) 
-    
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
+    socket.on('disconnect', (socket) => {
+        console.log("disconnect")    
     })
 })
 
@@ -51,6 +59,8 @@ app.use('/uploads', express.static('uploads'));
 app.use('/uploads/houses', express.static('uploads'));
 app.use('/', userRoutes);
 app.use('/', houseRoutes);
+app.use('/', messageRoutes)
+
 server.listen(port, () => {
     console.log('Listen on '+ port);
 })
