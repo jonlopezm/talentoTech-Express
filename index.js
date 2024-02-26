@@ -19,6 +19,9 @@ const userRoutes = require('./routes/UserRoutes');
 const houseRoutes = require('./routes/HouseRoutes');
 const messageRoutes = require('./routes/MessageRoutes');
 
+const messageSchema = require('./models/Message');
+
+
 //Metodo [GET, POST, PUT, PATCH, DELETE]
 // Nombre del servicio [/]
 router.get('/', (req, res) => {
@@ -34,8 +37,8 @@ io.on('connect', (socket) => {
         /** Almacenando el mensaje en la BD */
         var payload = JSON.parse(data)
         console.log(payload)
-        MessageSchema(payload).save().then((result) => {
-            socket.emit('message-receipt', {"message": "Mensaje almacenado"})
+        messageSchema(payload).save().then((result) => {
+            socket.broadcast.emit('message-receipt', payload)
         }).catch((err) => {
             console.log({"status" : "error", "message" :err.message})
         })        
