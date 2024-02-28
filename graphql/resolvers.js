@@ -1,7 +1,7 @@
 const userSchema = require('../models/User.js');
 const houseSchema = require('../models/House.js');
 const messageSchema = require('../models/Message.js');
-const { path } = require('../index.js');
+
 
 
 
