@@ -9,16 +9,22 @@ const http = require('http');
 const server = http.createServer(app);
 const io = socket(server);// Crear un servidor de socket.io
 
+//GraphQL
+const { createYoga } = require('graphql-yoga');
+const schema = require('./graphql/schema');
 
+
+// Importar la URL de la base de datos
 const DB_URL = process.env.DB_URL;// Importar la URL de la base de datos
 const mongoose = require('mongoose'); // Import mongoose
 mongoose.connect(DB_URL);
 
-
+// Importar rutas
 const userRoutes = require('./routes/UserRoutes');
 const houseRoutes = require('./routes/HouseRoutes');
 const messageRoutes = require('./routes/MessageRoutes');
 
+// Importar modelos
 const messageSchema = require('./models/Message');
 
 
@@ -56,6 +62,13 @@ app.use((req, res, next) => {
     res.io = io;
     next();
 })// Middleware para acceder a io en los controladores
+
+
+//GraphQL
+const yoga = new createYoga({ schema });
+app.use('/graphql', yoga);
+
+
 // Rutas
 app.use(router);
 app.use('/uploads', express.static('uploads'));
@@ -67,3 +80,5 @@ app.use('/', messageRoutes)
 server.listen(port, () => {
     console.log('Listen on '+ port);
 })
+
+module.exports = app;
