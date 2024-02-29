@@ -68,10 +68,13 @@ const messageFilterInput = new GraphQLInputObjectType({
 const houseFilterInput = new GraphQLInputObjectType({
     name: 'houseFilterInput',
     fields: {
+        address: { type: GraphQLString },
         city: { type: GraphQLString },
         state: { type: GraphQLString },
         type: { type: GraphQLString },
-        zipCode: { type: GraphQLString }
+        zipCode: { type: GraphQLString },
+        code: { type: GraphQLString },
+        size: { type: GraphQLString },
     }
 })
 

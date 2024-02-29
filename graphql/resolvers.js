@@ -2,9 +2,6 @@ const userSchema = require('../models/User.js');
 const houseSchema = require('../models/House.js');
 const messageSchema = require('../models/Message.js');
 
-
-
-
 const resolvers = {
     hello: () => {
         return "Hello world!";
@@ -125,6 +122,18 @@ const resolvers = {
             }
             if (filter.type) {
                 query.type = {$regex: filter.type, $options: 'i'}
+            }
+            if (filter.zipCode) {
+                query.zipCode = {$regex: filter.zipCode, $options: 'i'}
+            }
+            if (filter.code) {
+                query.code = {$regex: filter.code, $options: 'i'}
+            }
+            if (filter.size) {
+                query.size = {$regex: filter.size, $options: 'i'}
+            }
+            if (filter.address) {
+                query.address = {$regex: filter.address, $options: 'i'}
             }
             let houses = await houseSchema.find(query);
             return houses;
