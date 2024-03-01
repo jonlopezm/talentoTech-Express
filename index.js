@@ -81,4 +81,4 @@ server.listen(port, () => {
     console.log('Listen on '+ port);
 })
 
-module.exports = app;
+module.exports = server;

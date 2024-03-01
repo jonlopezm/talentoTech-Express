@@ -8,7 +8,7 @@ const userController = new UserController();
 
 
 
-router.get('/user', userController.validateToken, async (req, res) => {
+router.get('/user', /*userController.validateToken,*/ async (req, res) => {
     let users = await userSchema.find();
     res.json(users)
 })
@@ -32,17 +32,15 @@ router.post('/user', async (req, res) => {
         lastname: req.body.lastname,
         email: req.body.email,
         id: req.body.id,
+        avatar: req.body.avatar,
         password: hashedPassword
     })
     user.save().then((result) => {
         res.send(result)
     }).catch((err) => {
-
+        console.log(err);
         if (err.code == 11000) {
-            res.send({ "status": "error", "message": "El correo ya fue registrado" })
-        } else if (err.errors.email.message != null) {
-            res.send({ "status": "error", "message": err.errors.email.message })
-
+            res.send({ "status": "error", "message": err.message })
         } else {
             res.send({ "status": "error", "message": "Error almacenando la informacion" })
         }
@@ -75,7 +73,7 @@ router.patch('/user/:id', (req, res) => {
 router.delete('/user/:id', (req, res) => {
     var id = req.params.id;
     userSchema.findByIdAndDelete(id).then((result) => {
-        res.json({ "Status": "Success", "message": "Usuario eliminado 1" });
+        res.json({ "status": "success", "message": "Usuario eliminado 1" });
     }).catch((error) => {
         console.log(error);
         res.status(404).send("Error eliminando el registro");
@@ -86,10 +84,10 @@ router.delete('/user/:id', (req, res) => {
 router.delete('/user/:id', (req, res) => {
     var id = req.params.id;
     userSchema.deleteOne({ _id: id }).then(() => {
-        res.json({ "Status": "Success", "message": "Usuario eliminado 2" });
+        res.json({ "status": "success", "message": "Usuario eliminado 2" });
     }).catch((error) => {
         console.log(error);
-        res.json({ "Status": "Error", "message": "Error eliminando el usuario" });
+        res.json({ "status": "error", "message": "Error eliminando el usuario" });
     })
 })
 
@@ -106,10 +104,10 @@ router.delete('/user/:name/:email?', (req, res) => {
         query = { name: name }
     }
     userSchema.deleteOne(query).then(() => {
-        res.json({ "Status": "Success", "message": "Usuario eliminado" });
+        res.json({ "status": "success", "message": "Usuario eliminado" });
     }).catch((error) => {
         console.log(error);
-        res.json({ "Status": "Error", "message": "Error eliminando el usuario" });
+        res.json({ "status": "error", "message": "Error eliminando el usuario" });
     })
 })
 
@@ -117,7 +115,11 @@ router.post('/user/login', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     userController.login(email, password).then((result) => {
-        res.send(result);
+        if(result.status == "error"){
+            res.status(401).send(result)
+        }else{
+            res.send(result)
+        }
     }).catch((error) => {
         res.send(error);
     })
