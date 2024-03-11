@@ -23,6 +23,7 @@ mongoose.connect(DB_URL);
 const userRoutes = require('./routes/UserRoutes');
 const houseRoutes = require('./routes/HouseRoutes');
 const messageRoutes = require('./routes/MessageRoutes');
+const departmentRoutes = require('./read_file');
 
 // Importar modelos
 const messageSchema = require('./models/Message');
@@ -76,6 +77,7 @@ app.use('/uploads/houses', express.static('uploads'));
 app.use('/', userRoutes);
 app.use('/', houseRoutes);
 app.use('/', messageRoutes)
+app.use('/', departmentRoutes)
 
 server.listen(port, () => {
     console.log('Listen on '+ port);
