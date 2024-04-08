@@ -32,7 +32,7 @@ router.post('/user', async (req, res) => {
         lastname: req.body.lastname,
         email: req.body.email,
         id: req.body.id,
-        avatar: req.body.avatar,
+        //avatar: req.body.avatar,
         password: hashedPassword
     })
     user.save().then((result) => {
@@ -49,16 +49,25 @@ router.post('/user', async (req, res) => {
 
 
 
-router.patch('/user/:id', (req, res) => {
+router.patch('/user/:id', userController.validateToken,async (req, res) => {
     try {
         var id = req.params.id;
+        let hashedPassword
+
+        if (req.body.password) {
+            hashedPassword = await bcrypt.hash(req.body.password, 10)
+        }
+
         var updateUser = {
             name: req.body.name,
             lastname: req.body.lastname,
             email: req.body.email,
+            password: hashedPassword,
             id: req.body.id,
         }
-        userSchema.findByIdAndUpdate(id, updateUser).then((result) => {
+
+        console.log(updateUser);
+        userSchema.findByIdAndUpdate(id, updateUser, {new: true}).then((result) => {
             res.send(result);
         }).catch((error) => {
             console.log(error);
@@ -70,18 +79,18 @@ router.patch('/user/:id', (req, res) => {
     }
 })
 
-router.delete('/user/:id', (req, res) => {
-    var id = req.params.id;
-    userSchema.findByIdAndDelete(id).then((result) => {
-        res.json({ "status": "success", "message": "Usuario eliminado 1" });
-    }).catch((error) => {
-        console.log(error);
-        res.status(404).send("Error eliminando el registro");
-    })
-})
+// router.delete('/user/:id', (req, res) => {
+//     var id = req.params.id;
+//     userSchema.findByIdAndDelete(id).then((result) => {
+//         res.json({ "status": "success", "message": "Usuario eliminado 1" });
+//     }).catch((error) => {
+//         console.log(error);
+//         res.status(404).send("Error eliminando el registro");
+//     })
+// })
 
 
-router.delete('/user/:id', (req, res) => {
+router.delete('/user/:id', userController.validateToken, (req, res) => {
     var id = req.params.id;
     userSchema.deleteOne({ _id: id }).then(() => {
         res.json({ "status": "success", "message": "Usuario eliminado 2" });
@@ -154,7 +163,7 @@ router.post('/upload/:id/user', upload.single('file'), (req, res) => {
         avatar: req.file.path
     }
 
-    userSchema.findByIdAndUpdate(id, avatar,{new : true}).then((result) => {
+    userSchema.findByIdAndUpdate(id, updateUser,{new : true}).then((result) => {
         res.send({ "status": "success", "message": "Archivo subido correctamente" });
     }).catch((error) => {
         console.log(error);

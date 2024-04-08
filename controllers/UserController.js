@@ -19,10 +19,14 @@ class  UserController{
                 return { "status": "error", "message": "Error en la contraseña" };
             }
 
-            const  token = jwt.sign({ id: user._id, email : user.email}, JWT_SECRET, { expiresIn: '1h'});
-
+            const  token = jwt.sign({ userId: user._id, 
+                                    email : user.email,
+                                    avatar: user.avatar,
+                                    fullName: `${user.firstName} ${user.lastName}`
+                                }, JWT_SECRET, { expiresIn: '1h'});
+            user.password = null;
           //return { "Status": "Success", "message": "Usuario logueado" };
-            return { "status": "success", "token": token };
+            return { "status": "success", "token": token ,"user": user};
 
         } catch (error) {
             console.log(error);

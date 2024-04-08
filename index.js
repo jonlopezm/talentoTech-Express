@@ -1,10 +1,12 @@
 const express = require('express');// Importar express
 const app = express();// Crear una aplicacion express
 const router = express.Router();// Crear un router
-const port = 3000;// Puerto de escucha
+const port = 3010;// Puerto de escucha
 require('dotenv').config();// Importar variables de entorno
 
 const socket = require('socket.io');// Importar socket.io
+const cors = require('cors');// Importar cors
+app.use(cors());// Usar cors
 const http = require('http');
 const server = http.createServer(app);
 const io = socket(server);// Crear un servidor de socket.io

@@ -11,9 +11,9 @@ router.get('/houses', async (req, res) => {
 })
 
 
-router.get('/houses/:code', async (req, res) => {
-    var code = req.params.code;
-    let house = await houseSchema.findById(code);
+router.get('/houses/:id', async (req, res) => {
+    var id = req.params.id
+    let house = await houseSchema.findById(id);
     res.json(house);
 })
 
@@ -30,8 +30,8 @@ router.post('/houses', async (req, res) => {
         bathrooms: req.body.bathrooms,
         parking: req.body.parking,
         price: req.body.price,
-        code: req.body.code,
-        image: req.body.image
+        code: req.body.code
+        // image: req.body.image
     })
     house.save().then((result) => {
         res.send(result)
@@ -59,8 +59,7 @@ router.patch('/houses/:id', (req, res) => {
             bathrooms: req.body.bathrooms,
             parking: req.body.parking,
             price: req.body.price,
-            code: req.body.code,
-            image: req.body.image   
+            code: req.body.code
         }
         houseSchema.findByIdAndUpdate(id, updateHouse).then((result) => {
             res.send(result);
