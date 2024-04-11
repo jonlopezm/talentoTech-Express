@@ -47,7 +47,7 @@ io.on('connect', (socket) => {
         var payload = JSON.parse(data)
         console.log(payload)
         messageSchema(payload).save().then((result) => {
-            socket.broadcast.emit('message-receipt', payload)
+            socket.broadcast.emit('message-receipt', result)
         }).catch((err) => {
             console.log({"status" : "error", "message" :err.message})
         })        
